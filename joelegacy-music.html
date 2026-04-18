@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Music — Joe Legacy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --gold-light: #E8C97A; --cream: #F5EDD8;
+      --dark: #0D0B08; --dark-mid: #1A1610; --dark-card: #141008;
+      --accent: #E05C2A; --text: #EDE3CE;
+      --spotify: #1DB954; --apple: #FC3C44; --youtube: #FF0000;
+      --ytmusic: #FF0000; --amazon: #FF9900; --deezer: #A238FF;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+
+    /* Cursor */
+    .cursor { width: 10px; height: 10px; background: var(--gold); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: difference; }
+    .cursor-ring { width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: left .15s ease, top .15s ease; }
+
+    /* ═══ NAV ═══ */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: space-between; align-items: center; padding: 28px 56px; background: linear-gradient(to bottom, rgba(13,11,8,.97) 0%, transparent 100%); transition: background .4s, padding .3s; }
+    nav.scrolled { background: rgba(13,11,8,.97); backdrop-filter: blur(12px); padding: 18px 56px; border-bottom: 1px solid rgba(201,168,76,.15); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: .12em; color: var(--gold); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+    .nav-links a { font-size: 11px; font-weight: 400; letter-spacing: .2em; text-transform: uppercase; color: var(--text); text-decoration: none; position: relative; transition: color .3s; white-space: nowrap; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 100%; height: 1px; background: var(--gold); transition: right .3s ease; }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+    .nav-links a:hover::after, .nav-links a.active::after { right: 0; }
+    .nav-store { padding: 8px 18px !important; border: 1px solid rgba(201,168,76,.35); color: var(--gold) !important; }
+    .nav-store::after { display: none !important; }
+    .nav-store:hover { background: rgba(201,168,76,.08); border-color: var(--gold) !important; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: none; padding: 4px; z-index: 501; position: relative; }
+    .nav-hamburger span { display: block; width: 22px; height: 1px; background: var(--gold); transition: transform .3s, opacity .3s; }
+    .nav-mobile-open .nav-hamburger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-mobile-open .nav-hamburger span:nth-child(2) { opacity: 0; }
+    .nav-mobile-open .nav-hamburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    .nav-mobile-drawer { display: none; position: fixed; inset: 0; background: rgba(13,11,8,.98); z-index: 490; flex-direction: column; align-items: center; justify-content: center; gap: 32px; }
+    .nav-mobile-drawer.open { display: flex; }
+    .nav-mobile-drawer a { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: .1em; color: var(--text); text-decoration: none; transition: color .2s; }
+    .nav-mobile-drawer a:hover { color: var(--gold); }
+
+    /* ═══ HERO ═══ */
+    .music-hero { position: relative; padding: 160px 10vw 80px; overflow: hidden; border-bottom: 1px solid rgba(201,168,76,.1); }
+    .music-hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 100% at 100% 50%, rgba(201,168,76,.09) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 70% at 0% 100%, rgba(224,92,42,.06) 0%, transparent 60%),
+        linear-gradient(160deg, #0D0B08 0%, #1A1610 50%, #0D0B08 100%);
+    }
+    .music-hero-lines { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(201,168,76,.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,168,76,.025) 1px, transparent 1px); background-size: 80px 80px; }
+    .music-hero-content { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 60px; }
+    .music-hero-left {}
+    .music-hero-tag { font-size: 11px; letter-spacing: .35em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 14px; opacity: 0; animation: fadeUp .8s ease .2s forwards; }
+    .music-hero-tag::before { content: ''; display: block; width: 40px; height: 1px; background: var(--gold); }
+    .music-hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(72px,12vw,160px); line-height: .88; letter-spacing: .04em; color: var(--cream); opacity: 0; animation: fadeUp .9s ease .35s forwards; }
+    .music-hero h1 em { color: var(--gold); font-style: normal; display: block; }
+    .music-hero-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px; color: rgba(237,227,206,.45); margin-top: 20px; opacity: 0; animation: fadeUp .9s ease .55s forwards; }
+
+    /* Platform pills in hero */
+    .hero-platforms { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 40px; opacity: 0; animation: fadeUp .9s ease .7s forwards; }
+    .platform-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px; font-size: 11px; letter-spacing: .12em;
+      text-transform: uppercase; text-decoration: none; font-weight: 500;
+      border: 1px solid; transition: transform .2s, opacity .2s; cursor: none;
+    }
+    .platform-pill:hover { transform: translateY(-2px); opacity: .85; }
+    .platform-pill .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .pill-spotify { border-color: var(--spotify); color: var(--spotify); }
+    .pill-spotify .dot { background: var(--spotify); }
+    .pill-apple { border-color: var(--apple); color: var(--apple); }
+    .pill-apple .dot { background: var(--apple); }
+    .pill-ytmusic { border-color: var(--youtube); color: var(--youtube); }
+    .pill-ytmusic .dot { background: var(--youtube); }
+    .pill-amazon { border-color: var(--amazon); color: var(--amazon); }
+    .pill-amazon .dot { background: var(--amazon); }
+    .pill-deezer { border-color: var(--deezer); color: var(--deezer); }
+    .pill-deezer .dot { background: var(--deezer); }
+
+    /* Big waveform decoration */
+    .hero-wave {
+      position: absolute; right: 10vw; top: 50%; transform: translateY(-50%);
+      opacity: 0; animation: fadeIn 1.2s ease .8s forwards;
+      display: flex; align-items: center; gap: 4px; height: 140px;
+    }
+    .hero-wave-bar {
+      width: 3px; background: var(--gold); border-radius: 2px;
+      animation: wavePulse 1.4s ease-in-out infinite;
+      opacity: .4;
+    }
+
+    /* ═══ SECTION STRUCTURE ═══ */
+    .section-wrap { padding: 80px 10vw; }
+    .section-wrap + .section-wrap { padding-top: 0; }
+    .section-label { font-size: 10px; letter-spacing: .4em; text-transform: uppercase; color: var(--gold); margin-bottom: 40px; display: flex; align-items: center; gap: 16px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,.2); }
+
+    /* ═══ FEATURED RELEASE (latest single) ═══ */
+    .featured-release {
+      background: var(--dark-mid);
+      display: grid; grid-template-columns: 320px 1fr;
+      border: 1px solid rgba(201,168,76,.08);
+      overflow: hidden; position: relative;
+    }
+    .featured-release::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--gold), transparent);
+    }
+    .featured-art {
+      position: relative; overflow: hidden; background: var(--dark-card);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .featured-art img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.9); transition: transform .6s ease, filter .4s; }
+    .featured-release:hover .featured-art img { transform: scale(1.04); filter: brightness(1); }
+    .art-placeholder {
+      width: 100%; aspect-ratio: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; background: var(--dark-card);
+    }
+    .art-placeholder .art-icon { font-size: 64px; opacity: .2; }
+    .art-placeholder .art-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: .1em; color: rgba(201,168,76,.3); }
+    .featured-body { padding: 48px 40px; display: flex; flex-direction: column; justify-content: center; }
+    .featured-tag { font-size: 9px; letter-spacing: .35em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .featured-tag::before { content: ''; display: block; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease infinite; }
+    .featured-title { font-family: 'Bebas Neue', sans-serif; font-size: 64px; letter-spacing: .04em; color: var(--cream); line-height: .95; margin-bottom: 8px; }
+    .featured-year { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: rgba(237,227,206,.4); margin-bottom: 32px; }
+    .featured-links { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ═══ RELEASE GRID ═══ */
+    .release-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 2px;
+    }
+    .release-card {
+      background: var(--dark-mid); position: relative;
+      overflow: hidden; transition: background .3s;
+      display: flex; flex-direction: column;
+      cursor: none;
+    }
+    .release-card:hover { background: #201C14; }
+    .release-art {
+      position: relative; overflow: hidden; aspect-ratio: 1;
+      background: var(--dark-card);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .release-art img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.8) saturate(.85); transition: transform .5s ease, filter .4s; }
+    .release-card:hover .release-art img { transform: scale(1.06); filter: brightness(1) saturate(1); }
+    .release-art-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .release-art-placeholder .rp-icon { font-size: 40px; opacity: .18; }
+    .release-art-placeholder .rp-name { font-size: 9px; letter-spacing: .25em; text-transform: uppercase; color: rgba(201,168,76,.2); text-align: center; padding: 0 12px; }
+
+    /* Hover overlay with stream buttons */
+    .release-hover-overlay {
+      position: absolute; inset: 0;
+      background: rgba(13,11,8,.85);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; padding: 16px;
+      opacity: 0; transition: opacity .3s;
+    }
+    .release-card:hover .release-hover-overlay { opacity: 1; }
+    .stream-btn {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 9px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; font-weight: 500; letter-spacing: .15em; text-transform: uppercase;
+      text-decoration: none; border: 1px solid; transition: opacity .2s; cursor: none;
+    }
+    .stream-btn:hover { opacity: .8; }
+    .stream-btn .sb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .sb-spotify { border-color: rgba(29,185,84,.4); color: var(--spotify); }
+    .sb-spotify .sb-dot { background: var(--spotify); }
+    .sb-apple { border-color: rgba(252,60,68,.4); color: var(--apple); }
+    .sb-apple .sb-dot { background: var(--apple); }
+    .sb-ytmusic { border-color: rgba(255,0,0,.4); color: var(--youtube); }
+    .sb-ytmusic .sb-dot { background: var(--youtube); }
+    .sb-placeholder { border-color: rgba(237,227,206,.1); color: rgba(237,227,206,.3); }
+    .sb-placeholder .sb-dot { background: rgba(237,227,206,.2); }
+
+    .release-body { padding: 18px 20px 22px; }
+    .release-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .06em; color: var(--cream); line-height: 1.1; margin-bottom: 4px; }
+    .release-meta { font-size: 11px; color: rgba(237,227,206,.35); letter-spacing: .08em; }
+    .release-type { display: inline-block; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; padding: 3px 8px; border: 1px solid rgba(201,168,76,.2); color: rgba(201,168,76,.5); margin-top: 8px; }
+    .release-type.ep { border-color: rgba(224,92,42,.3); color: rgba(224,92,42,.6); }
+
+    /* ═══ YOUTUBE SECTION ═══ */
+    .youtube-section { padding: 0 10vw 80px; }
+    .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .video-wrap {
+      position: relative; background: var(--dark-card);
+      overflow: hidden;
+    }
+    .video-wrap iframe {
+      display: block; width: 100%; aspect-ratio: 16/9; border: none;
+    }
+    .video-label { padding: 14px 18px; background: var(--dark-mid); }
+    .video-label .vl-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: .06em; color: var(--cream); }
+    .video-label .vl-year { font-size: 11px; color: rgba(237,227,206,.3); margin-top: 2px; }
+
+    /* YouTube channel CTA */
+    .yt-cta {
+      margin-top: 2px; background: var(--dark-mid);
+      padding: 32px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      border-top: 1px solid rgba(255,0,0,.15);
+    }
+    .yt-cta p { font-size: 13px; color: rgba(237,227,206,.5); }
+    .yt-cta p strong { color: var(--cream); font-weight: 400; }
+
+    /* ═══ SOCIAL STRIP ═══ */
+    .social-strip {
+      padding: 60px 10vw;
+      background: var(--dark-mid);
+      border-top: 1px solid rgba(201,168,76,.1);
+      border-bottom: 1px solid rgba(201,168,76,.1);
+      display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+    }
+    .social-strip-label { font-size: 10px; letter-spacing: .4em; text-transform: uppercase; color: var(--gold); }
+    .social-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .social-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border: 1px solid rgba(201,168,76,.2);
+      color: rgba(237,227,206,.6); font-size: 11px; letter-spacing: .15em;
+      text-transform: uppercase; text-decoration: none;
+      transition: border-color .3s, color .3s; cursor: none;
+    }
+    .social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Buttons */
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--gold); color: var(--dark); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: background .3s, transform .2s; cursor: none; border: none; }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border: 1px solid rgba(201,168,76,.4); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: all .3s; cursor: none; background: none; }
+    .btn-outline:hover { background: rgba(201,168,76,.08); border-color: var(--gold); }
+
+    /* FOOTER */
+    footer { padding: 40px 10vw; background: var(--dark); border-top: 1px solid rgba(201,168,76,.08); display: flex; justify-content: space-between; align-items: center; }
+    footer .logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .12em; color: var(--gold); }
+    footer p { font-size: 11px; color: rgba(237,227,206,.3); letter-spacing: .08em; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 11px; letter-spacing: .15em; color: rgba(237,227,206,.4); text-decoration: none; text-transform: uppercase; transition: color .2s; }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* Animations */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    @keyframes wavePulse { 0%,100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity .8s ease, transform .8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .08s; }
+    .reveal-delay-2 { transition-delay: .16s; }
+    .reveal-delay-3 { transition-delay: .24s; }
+    .reveal-delay-4 { transition-delay: .32s; }
+    .reveal-delay-5 { transition-delay: .40s; }
+    .reveal-delay-6 { transition-delay: .48s; }
+    .reveal-delay-7 { transition-delay: .54s; }
+    .reveal-delay-8 { transition-delay: .60s; }
+    .reveal-delay-9 { transition-delay: .66s; }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .music-hero { padding: 140px 6vw 60px; }
+      .music-hero-content { flex-direction: column; align-items: flex-start; }
+      .hero-wave { display: none; }
+      .section-wrap { padding: 60px 6vw; }
+      .featured-release { grid-template-columns: 1fr; }
+      .featured-body { padding: 28px 24px; }
+      .featured-title { font-size: 48px; }
+      .release-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+      .video-grid { grid-template-columns: 1fr; }
+      .youtube-section { padding: 0 6vw 60px; }
+      .social-strip { padding: 40px 6vw; }
+      .yt-cta { flex-direction: column; align-items: flex-start; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+    }
+    @media (max-width: 560px) {
+      .hero-platforms { gap: 8px; }
+      .platform-pill { padding: 8px 14px; font-size: 10px; }
+      .release-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="joelegacy.html" class="nav-logo">Joe Legacy</a>
+    <ul class="nav-links">
+      <li><a href="joelegacy.html">Home</a></li>
+      <li><a href="joelegacy-music.html" class="active">Music</a></li>
+      <li><a href="joelegacy-store.html" class="nav-store">Store</a></li>
+      <li><a href="joelegacy.html#newsletter">Book</a></li>
+      <li><a href="joelegacy-press.html">Press</a></li>
+      <li><a href="https://legacy-charity.org" target="_blank">Charity</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile-drawer" id="mobileDrawer">
+    <a href="joelegacy.html" onclick="closeDrawer()">Home</a>
+    <a href="joelegacy-music.html" onclick="closeDrawer()">Music</a>
+    <a href="joelegacy-store.html" onclick="closeDrawer()">Store</a>
+    <a href="joelegacy.html#newsletter" onclick="closeDrawer()">Book</a>
+    <a href="joelegacy-press.html" onclick="closeDrawer()">Press</a>
+    <a href="https://legacy-charity.org" target="_blank" onclick="closeDrawer()">Charity</a>
+  </div>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="music-hero">
+    <div class="music-hero-bg"></div>
+    <div class="music-hero-lines"></div>
+    <div class="music-hero-content">
+      <div class="music-hero-left">
+        <div class="music-hero-tag">Discography &amp; Streaming</div>
+        <h1>All<br/><em>Music</em></h1>
+        <p class="music-hero-sub">Stream on your favourite platform — no account needed here</p>
+
+        <!-- ✅ All platform links confirmed or noted -->
+        <div class="hero-platforms">
+          <!-- ✅ Confirmed: Spotify artist page -->
+          <a href="https://open.spotify.com/artist/15Objg7tKCE1zvxcGRCTAa" target="_blank" class="platform-pill pill-spotify">
+            <span class="dot"></span> Spotify
+          </a>
+          <!-- ✅ Confirmed: Apple Music artist page -->
+          <a href="https://music.apple.com/us/artist/joe-legacy/1495851902" target="_blank" class="platform-pill pill-apple">
+            <span class="dot"></span> Apple Music
+          </a>
+          <!-- ✅ Confirmed: YouTube Music channel -->
+          <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="platform-pill pill-ytmusic">
+            <span class="dot"></span> YouTube Music
+          </a>
+          <!-- ⚠ PLACEHOLDER: add Amazon Music artist link when available -->
+          <a href="#" class="platform-pill pill-amazon" title="Amazon Music — update link">
+            <span class="dot"></span> Amazon Music
+          </a>
+          <!-- ⚠ PLACEHOLDER: add Deezer artist link when available -->
+          <a href="#" class="platform-pill pill-deezer" title="Deezer — update link">
+            <span class="dot"></span> Deezer
+          </a>
+        </div>
+      </div>
+
+      <!-- Animated waveform decoration -->
+      <div class="hero-wave" id="heroWave"></div>
+    </div>
+  </section>
+
+  <!-- ═══ LATEST RELEASE — FEATURED ═══ -->
+  <section class="section-wrap">
+    <div class="section-label reveal">Latest Release</div>
+
+    <!-- ✅ Dance (2026) — confirmed from Spotify + Apple Music -->
+    <div class="featured-release reveal">
+      <div class="featured-art">
+        <!--
+          ⚠ ARTWORK: replace the placeholder below with:
+          <img src="URL-TO-DANCE-ARTWORK.jpg" alt="Dance — Joe Legacy" />
+          Spotify CDN: https://i.scdn.co/image/ab67616d000048518cd6fa1564e1f59f211645a1
+        -->
+        <img
+          src="https://i.scdn.co/image/ab67616d000048518cd6fa1564e1f59f211645a1"
+          alt="Dance — Joe Legacy"
+          onerror="this.parentNode.innerHTML='<div class=\'art-placeholder\'><div class=\'art-icon\'>🎵</div><div class=\'art-title\'>Dance</div></div>'"
+        />
+      </div>
+      <div class="featured-body">
+        <div class="featured-tag">Latest Single</div>
+        <div class="featured-title">Dance</div>
+        <div class="featured-year">2026 &nbsp;·&nbsp; Single</div>
+        <div class="featured-links">
+          <a href="https://open.spotify.com/album/5JVzSvvZ781CygIsyHOtIq" target="_blank" class="stream-btn sb-spotify">
+            <span class="sb-dot"></span> Spotify
+          </a>
+          <a href="https://music.apple.com/us/album/dance-single/1887261870" target="_blank" class="stream-btn sb-apple">
+            <span class="sb-dot"></span> Apple Music
+          </a>
+          <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic">
+            <span class="sb-dot"></span> YouTube Music
+          </a>
+          <!-- ⚠ PLACEHOLDER: add direct Amazon / Deezer link for Dance when available -->
+          <a href="#" class="stream-btn sb-placeholder" title="Amazon Music — add link">
+            <span class="sb-dot"></span> Amazon Music
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FULL DISCOGRAPHY GRID ═══ -->
+  <section class="section-wrap" style="padding-top: 0;">
+    <div class="section-label reveal">All Releases</div>
+    <div class="release-grid">
+
+      <!-- ✅ Want U Over (2025) -->
+      <div class="release-card reveal reveal-delay-1">
+        <div class="release-art">
+          <img
+            src="https://i.scdn.co/image/ab67616d0000485193cf9cd2dbf840a74a480cf5"
+            alt="Want U Over"
+            onerror="this.parentNode.innerHTML='<div class=\'release-art-placeholder\'><div class=\'rp-icon\'>🎵</div><div class=\'rp-name\'>Want U Over</div></div>'"
+          />
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/album/0TOSTtcWikQINWZz9nH7j8" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/album/want-u-over-single/1806398256" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube Music</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">Want U Over</div>
+          <div class="release-meta">2025</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+      <!-- ✅ My Story (2025) -->
+      <div class="release-card reveal reveal-delay-2">
+        <div class="release-art">
+          <img
+            src="https://i.scdn.co/image/ab67616d0000485116d8e471a563cb82916bdef3"
+            alt="My Story"
+            onerror="this.parentNode.innerHTML='<div class=\'release-art-placeholder\'><div class=\'rp-icon\'>🎵</div><div class=\'rp-name\'>My Story</div></div>'"
+          />
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/album/1eCbd3AGKiMi2Nh8BuVNsV" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/album/my-story-single/1846101240" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube Music</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">My Story</div>
+          <div class="release-meta">2025</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+      <!-- ✅ Happy Day (2025) -->
+      <div class="release-card reveal reveal-delay-3">
+        <div class="release-art">
+          <img
+            src="https://i.scdn.co/image/ab67616d0000485116d8e471a563cb82916bdef3"
+            alt="Happy Day"
+            onerror="this.parentNode.innerHTML='<div class=\'release-art-placeholder\'><div class=\'rp-icon\'>🎵</div><div class=\'rp-name\'>Happy Day</div></div>'"
+          />
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/album/4TOiwzO6ggw0P8vanMMpeq" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/album/happy-day-single/1835381065" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube Music</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">Happy Day</div>
+          <div class="release-meta">2025</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+      <!-- ✅ Slippery Ice (2025) -->
+      <div class="release-card reveal reveal-delay-4">
+        <div class="release-art">
+          <img
+            src="https://i.scdn.co/image/ab67616d00004851f672ccee0ec6f802d9cfdc23"
+            alt="Slippery Ice"
+            onerror="this.parentNode.innerHTML='<div class=\'release-art-placeholder\'><div class=\'rp-icon\'>🎵</div><div class=\'rp-name\'>Slippery Ice</div></div>'"
+          />
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/album/1HgkFgm686jtziPN4j4nmX" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/album/slippery-ice-single/1791358103" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube Music</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">Slippery Ice</div>
+          <div class="release-meta">2025</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+      <!-- ✅ No Negativity (2024) -->
+      <div class="release-card reveal reveal-delay-5">
+        <div class="release-art">
+          <img
+            src="https://i.scdn.co/image/ab67616d0000485156585e0c625a5a81fc11cb1a"
+            alt="No Negativity"
+            onerror="this.parentNode.innerHTML='<div class=\'release-art-placeholder\'><div class=\'rp-icon\'>🎵</div><div class=\'rp-name\'>No Negativity</div></div>'"
+          />
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/album/0Q5JnPloe2z3ypRI8UyBsX" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/album/no-negativity-single/1765305861" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube Music</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">No Negativity</div>
+          <div class="release-meta">2024</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+      <!-- ✅ What Is Love to You? (2024) -->
+      <div class="release-card reveal reveal-delay-6">
+        <div class="release-art">
+          <img
+            src="https://i.scdn.co/image/ab67616d00004851c3bc3c85b009bb1d09b6b2e5"
+            alt="What Is Love to You?"
+            onerror="this.parentNode.innerHTML='<div class=\'release-art-placeholder\'><div class=\'rp-icon\'>🎵</div><div class=\'rp-name\'>What Is Love to You?</div></div>'"
+          />
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/album/2qgCuMQ7hge28zwmbu3eM7" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/album/what-is-love-to-you-single/1746498791" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube Music</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">What Is Love to You?</div>
+          <div class="release-meta">2024</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+      <!-- ✅ The Journey EP (2023) -->
+      <div class="release-card reveal reveal-delay-7">
+        <div class="release-art">
+          <img
+            src="https://i.scdn.co/image/ab67616d00004851dfd006cca183d599e5c1016a"
+            alt="The Journey EP"
+            onerror="this.parentNode.innerHTML='<div class=\'release-art-placeholder\'><div class=\'rp-icon\'>💿</div><div class=\'rp-name\'>The Journey EP</div></div>'"
+          />
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/album/4ke5BSIOrAop4Q7zO1ki2N" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/artist/joe-legacy/1495851902" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube Music</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">The Journey</div>
+          <div class="release-meta">2023 &nbsp;·&nbsp; Burukutu · Cherem · Your Lane + more</div>
+          <div class="release-type ep">EP</div>
+        </div>
+      </div>
+
+      <!-- ✅ Jeje Laye (2020) -->
+      <div class="release-card reveal reveal-delay-8">
+        <div class="release-art">
+          <div class="release-art-placeholder">
+            <div class="rp-icon">🎵</div>
+            <div class="rp-name">Jeje Laye</div>
+          </div>
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/track/2E1UfQ9S0TQzJTsmYo7YNE" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/gb/album/jeje-laye-single/1520020165" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://www.youtube.com/watch?v=j5SXfcXz-Us" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">Jeje Laye</div>
+          <div class="release-meta">2020 &nbsp;·&nbsp; "Take Life Easy"</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+      <!-- ✅ Singing Truck Driver (2019/2020) -->
+      <div class="release-card reveal reveal-delay-9">
+        <div class="release-art">
+          <div class="release-art-placeholder">
+            <div class="rp-icon">🚛</div>
+            <div class="rp-name">Singing Truck Driver</div>
+          </div>
+          <div class="release-hover-overlay">
+            <a href="https://open.spotify.com/track/4cHoZsWwxhTls9NC0b469o" target="_blank" class="stream-btn sb-spotify"><span class="sb-dot"></span> Spotify</a>
+            <a href="https://music.apple.com/us/album/singing-truck-driver-single/1502027134" target="_blank" class="stream-btn sb-apple"><span class="sb-dot"></span> Apple Music</a>
+            <a href="https://www.youtube.com/watch?v=PCVkmWxXZkk" target="_blank" class="stream-btn sb-ytmusic"><span class="sb-dot"></span> YouTube</a>
+          </div>
+        </div>
+        <div class="release-body">
+          <div class="release-title">Singing Truck Driver</div>
+          <div class="release-meta">2019 / 2020</div>
+          <div class="release-type">Single</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ YOUTUBE VIDEOS (embedded — no bounce) ═══ -->
+  <section class="youtube-section">
+    <div class="section-label reveal">Watch</div>
+    <div class="video-grid">
+
+      <!-- ✅ Want U Over — confirmed from joelegacy.com/events/ YouTube feed -->
+      <div class="video-wrap reveal reveal-delay-1">
+        <iframe
+          src="https://www.youtube.com/embed/R7X_CbAcIco"
+          title="Joe Legacy — Want U Over"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+        <div class="video-label">
+          <div class="vl-title">Want U Over</div>
+          <div class="vl-year">2025</div>
+        </div>
+      </div>
+
+      <!-- ✅ Jeje Laye official video — confirmed YouTube ID j5SXfcXz-Us -->
+      <div class="video-wrap reveal reveal-delay-2">
+        <iframe
+          src="https://www.youtube.com/embed/j5SXfcXz-Us"
+          title="Joe Legacy — Jeje Laye (Official Video)"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+        <div class="video-label">
+          <div class="vl-title">Jeje Laye</div>
+          <div class="vl-year">2020 · Official Video</div>
+        </div>
+      </div>
+
+      <!-- ✅ Singing Truck Driver lyrics video — confirmed YouTube ID PCVkmWxXZkk -->
+      <div class="video-wrap reveal reveal-delay-3">
+        <iframe
+          src="https://www.youtube.com/embed/PCVkmWxXZkk"
+          title="Joe Legacy — Singing Truck Driver"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+        <div class="video-label">
+          <div class="vl-title">Singing Truck Driver</div>
+          <div class="vl-year">2019 · Lyrics Video</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- YouTube channel CTA -->
+    <div class="yt-cta reveal">
+      <div>
+        <p><strong>More videos on YouTube</strong></p>
+        <p>Live performances, behind-the-scenes, charity visits and fan rewards</p>
+      </div>
+      <a href="https://www.youtube.com/channel/UCtwKdgfKoNiqUuLDu7YvVCQ" target="_blank" class="btn-outline">
+        ▶ &nbsp;YouTube Channel
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══ SOCIAL / FOLLOW STRIP ═══ -->
+  <!-- ✅ All social links confirmed from Spotify artist page -->
+  <div class="social-strip reveal">
+    <div class="social-strip-label">Follow Joe Legacy</div>
+    <div class="social-links">
+      <a href="https://open.spotify.com/artist/15Objg7tKCE1zvxcGRCTAa" target="_blank" class="social-link">🎧 Spotify</a>
+      <a href="https://music.apple.com/us/artist/joe-legacy/1495851902" target="_blank" class="social-link">🍎 Apple Music</a>
+      <a href="https://music.youtube.com/channel/UCeYMRV7BbyPcoAdFiHHW-3w" target="_blank" class="social-link">▶ YouTube Music</a>
+      <a href="https://www.youtube.com/channel/UCtwKdgfKoNiqUuLDu7YvVCQ" target="_blank" class="social-link">📹 YouTube</a>
+      <a href="https://instagram.com/iamjoelegacy/" target="_blank" class="social-link">📷 Instagram</a>
+      <a href="https://facebook.com/joelegacymusic" target="_blank" class="social-link">💬 Facebook</a>
+      <a href="https://twitter.com/onejoelegacy" target="_blank" class="social-link">𝕏 Twitter</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="logo">Joe Legacy</div>
+    <p>© 2026 Joe Legacy. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="joelegacy.html">Home</a>
+      <a href="joelegacy-store.html">Store</a>
+      <a href="joelegacy-press.html">Press</a>
+      <a href="https://legacy-charity.org" target="_blank">Charity</a>
+    </div>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function tick(){cursor.style.left=mx+'px';cursor.style.top=my+'px';rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tick);})();
+
+    // Nav scroll
+    const nav=document.getElementById('nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60));
+
+    // Mobile drawer
+    const hamburger=document.getElementById('hamburger'),drawer=document.getElementById('mobileDrawer');
+    hamburger.addEventListener('click',()=>{
+      const open=drawer.classList.toggle('open');
+      nav.classList.toggle('nav-mobile-open',open);
+      document.body.style.overflow=open?'hidden':'';
+    });
+    function closeDrawer(){drawer.classList.remove('open');nav.classList.remove('nav-mobile-open');document.body.style.overflow='';}
+
+    // Scroll reveal
+    const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+    // Build animated waveform bars
+    const wave = document.getElementById('heroWave');
+    if(wave){
+      const heights = [20,45,80,55,100,70,40,90,60,35,75,50,110,65,30,85,45,95,55,40];
+      heights.forEach((h,i)=>{
+        const bar = document.createElement('div');
+        bar.className = 'hero-wave-bar';
+        bar.style.cssText = `height:${h}px;animation-delay:${(i*0.07).toFixed(2)}s;animation-duration:${(1.2 + (i%4)*0.2).toFixed(1)}s;`;
+        wave.appendChild(bar);
+      });
+    }
+  </script>
+</body>
+</html>

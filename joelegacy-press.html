@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Press & EPK — Joe Legacy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --gold-light: #E8C97A; --cream: #F5EDD8;
+      --dark: #0D0B08; --dark-mid: #1A1610;
+      --accent: #E05C2A; --text: #EDE3CE;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+
+    /* Cursor */
+    .cursor { width: 10px; height: 10px; background: var(--gold); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: difference; }
+    .cursor-ring { width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: left .15s ease, top .15s ease; }
+
+    /* ═══ NAV ═══ */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: space-between; align-items: center; padding: 28px 56px; background: linear-gradient(to bottom, rgba(13,11,8,.97) 0%, transparent 100%); transition: background .4s, padding .3s; }
+    nav.scrolled { background: rgba(13,11,8,.97); backdrop-filter: blur(12px); padding: 18px 56px; border-bottom: 1px solid rgba(201,168,76,.15); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: .12em; color: var(--gold); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+    .nav-links a { font-size: 11px; font-weight: 400; letter-spacing: .2em; text-transform: uppercase; color: var(--text); text-decoration: none; position: relative; transition: color .3s; white-space: nowrap; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 100%; height: 1px; background: var(--gold); transition: right .3s ease; }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+    .nav-links a:hover::after, .nav-links a.active::after { right: 0; }
+    .nav-store { padding: 8px 18px !important; border: 1px solid rgba(201,168,76,.35); color: var(--gold) !important; }
+    .nav-store::after { display: none !important; }
+    .nav-store:hover { background: rgba(201,168,76,.08); border-color: var(--gold) !important; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: none; padding: 4px; z-index: 501; position: relative; }
+    .nav-hamburger span { display: block; width: 22px; height: 1px; background: var(--gold); transition: transform .3s, opacity .3s; }
+    .nav-mobile-open .nav-hamburger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-mobile-open .nav-hamburger span:nth-child(2) { opacity: 0; }
+    .nav-mobile-open .nav-hamburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    .nav-mobile-drawer { display: none; position: fixed; inset: 0; background: rgba(13,11,8,.98); z-index: 490; flex-direction: column; align-items: center; justify-content: center; gap: 32px; }
+    .nav-mobile-drawer.open { display: flex; }
+    .nav-mobile-drawer a { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: .1em; color: var(--text); text-decoration: none; transition: color .2s; }
+    .nav-mobile-drawer a:hover { color: var(--gold); }
+
+    /* ═══ PLACEHOLDER SYSTEM ═══
+       Sections marked ⚠ need your input before publishing.
+       Remove .needs-input styles and flags when done. */
+    .needs-input { outline: 1px dashed rgba(224,92,42,.5); outline-offset: -1px; }
+    .flag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent); color: #fff;
+      font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+      font-weight: 500; padding: 4px 10px; margin-bottom: 10px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .placeholder-text { color: rgba(224,92,42,.65); font-style: italic; }
+
+    /* HERO */
+    .press-hero { position: relative; padding: 160px 10vw 80px; overflow: hidden; border-bottom: 1px solid rgba(201,168,76,.1); }
+    .press-hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 10% 50%, rgba(201,168,76,.07) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 90% 80%, rgba(224,92,42,.05) 0%, transparent 60%), linear-gradient(160deg, #0D0B08 0%, #1A1610 50%, #0D0B08 100%); }
+    .press-hero-lines { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(201,168,76,.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,168,76,.025) 1px, transparent 1px); background-size: 80px 80px; }
+    .press-hero-content { position: relative; }
+    .press-hero-tag { font-size: 11px; letter-spacing: .35em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 14px; opacity: 0; animation: fadeUp .8s ease .2s forwards; }
+    .press-hero-tag::before { content: ''; display: block; width: 40px; height: 1px; background: var(--gold); }
+    .press-hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px,10vw,130px); line-height: .9; letter-spacing: .04em; color: var(--cream); opacity: 0; animation: fadeUp .9s ease .4s forwards; }
+    .press-hero h1 em { color: var(--gold); font-style: normal; }
+    .press-hero-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px; color: rgba(237,227,206,.5); margin-top: 16px; opacity: 0; animation: fadeUp .9s ease .6s forwards; }
+
+    /* DOWNLOAD BAR */
+    .download-bar { padding: 32px 10vw; background: var(--dark-mid); border-bottom: 1px solid rgba(201,168,76,.1); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .download-bar-label { font-size: 10px; letter-spacing: .35em; text-transform: uppercase; color: var(--gold); margin-right: 8px; }
+    .btn-download { display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; border: 1px solid rgba(201,168,76,.3); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; text-decoration: none; transition: all .3s; background: none; cursor: none; }
+    .btn-download:hover { background: rgba(201,168,76,.08); border-color: var(--gold); }
+    .btn-download.primary { background: var(--gold); color: var(--dark); border-color: var(--gold); font-weight: 500; }
+    .btn-download.primary:hover { background: var(--gold-light); }
+
+    /* MAIN BODY GRID */
+    .press-body { padding: 80px 10vw 100px; display: grid; grid-template-columns: 1fr 360px; gap: 60px; align-items: start; }
+
+    .section-label { font-size: 10px; letter-spacing: .4em; text-transform: uppercase; color: var(--gold); margin-bottom: 32px; display: flex; align-items: center; gap: 16px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,.2); }
+
+    /* BIO */
+    .bio-long { font-size: 15px; line-height: 1.9; color: rgba(237,227,206,.7); margin-bottom: 20px; }
+    .bio-long strong { color: var(--cream); font-weight: 400; }
+    .bio-long em { font-style: italic; }
+
+    .bio-short-box { background: var(--dark-mid); border-left: 2px solid var(--gold); padding: 24px 28px; margin-top: 40px; }
+    .bio-short-box .label { font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .bio-short-box p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; line-height: 1.7; color: rgba(237,227,206,.65); }
+
+    /* Accolades */
+    .accolade-strip { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
+    .accolade-item { background: var(--dark-mid); padding: 20px 24px; display: flex; align-items: flex-start; gap: 20px; }
+    .accolade-year { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); letter-spacing: .06em; flex-shrink: 0; width: 64px; line-height: 1.1; }
+    .accolade-text { font-size: 13px; line-height: 1.6; color: rgba(237,227,206,.65); }
+    .accolade-text strong { color: var(--cream); font-weight: 400; }
+
+    /* Stats */
+    .stats-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 8px; }
+    .stat-card { background: var(--dark-mid); padding: 32px 28px; }
+    .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--gold); line-height: 1; letter-spacing: .04em; }
+    .stat-label { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(237,227,206,.4); margin-top: 6px; }
+    .stat-note { font-size: 10px; color: rgba(237,227,206,.2); margin-top: 4px; }
+
+    /* SIDEBAR */
+    .press-sidebar { display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-block { background: var(--dark-mid); }
+    .sidebar-block-head { padding: 20px 24px; border-bottom: 1px solid rgba(201,168,76,.1); font-size: 9px; letter-spacing: .35em; text-transform: uppercase; color: var(--gold); }
+    .fact-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,.03); gap: 16px; }
+    .fact-row:last-child { border-bottom: none; }
+    .fact-key { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(237,227,206,.35); flex-shrink: 0; }
+    .fact-val { font-size: 13px; color: var(--text); text-align: right; }
+    .fact-val a { color: var(--gold); text-decoration: none; }
+    .fact-val a:hover { text-decoration: underline; }
+
+    /* STAGES */
+    .stages-section { padding: 0 10vw 80px; }
+    .stages-list { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; }
+    .stage-item { background: var(--dark-mid); padding: 24px 28px; }
+    .stage-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: .08em; color: var(--cream); margin-bottom: 4px; }
+    .stage-detail { font-size: 12px; color: rgba(237,227,206,.4); line-height: 1.5; }
+
+    /* QUOTES */
+    .quotes-section { padding: 0 10vw 80px; }
+    .quotes-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; }
+    .quote-card { background: var(--dark-mid); padding: 40px 32px; position: relative; overflow: hidden; }
+    .quote-card::before { content: '"'; font-family: 'Cormorant Garamond', serif; font-size: 120px; color: rgba(201,168,76,.06); line-height: .8; position: absolute; top: 16px; left: 20px; pointer-events: none; }
+    .quote-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; line-height: 1.7; color: rgba(237,227,206,.75); margin-bottom: 24px; position: relative; }
+    .quote-source { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+    .quote-pub { font-size: 11px; color: rgba(237,227,206,.35); margin-top: 4px; }
+
+    /* PHOTOS */
+    .photos-section { padding: 0 10vw 80px; }
+    .photo-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; }
+    .photo-cell { aspect-ratio: 1; background: var(--dark-mid); overflow: hidden; position: relative; }
+    .photo-cell img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.8) saturate(.85); transition: filter .4s, transform .5s; }
+    .photo-cell:hover img { filter: brightness(1) saturate(1); transform: scale(1.04); }
+    .photo-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    .photo-placeholder .ph-icon { font-size: 32px; opacity: .25; }
+    .photo-placeholder .ph-label { font-size: 9px; letter-spacing: .25em; text-transform: uppercase; color: rgba(201,168,76,.25); text-align: center; padding: 0 12px; }
+    .photo-download-overlay { position: absolute; inset: 0; background: rgba(13,11,8,.7); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .3s; }
+    .photo-cell:hover .photo-download-overlay { opacity: 1; }
+    .photo-dl-btn { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,.4); padding: 8px 16px; text-decoration: none; cursor: none; }
+
+    /* RIDER */
+    .rider-section { padding: 0 10vw 80px; }
+    .rider-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; }
+    .rider-card { background: var(--dark-mid); padding: 36px 32px; }
+    .rider-card h4 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .08em; color: var(--cream); margin-bottom: 20px; }
+    .rider-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .rider-list li { font-size: 13px; line-height: 1.6; color: rgba(237,227,206,.55); padding-left: 18px; position: relative; }
+    .rider-list li::before { content: '—'; position: absolute; left: 0; color: var(--gold); font-size: 11px; }
+    .rider-list li.needs-input { color: rgba(224,92,42,.6); }
+
+    /* CONTACT */
+    .press-contact { padding: 80px 10vw; background: var(--dark-mid); border-top: 1px solid rgba(201,168,76,.1); display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+    .press-contact-text h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px,5vw,64px); letter-spacing: .06em; color: var(--cream); margin-bottom: 8px; }
+    .press-contact-text h2 em { color: var(--gold); font-style: normal; }
+    .press-contact-text p { font-size: 14px; color: rgba(237,227,206,.5); }
+    .press-contact-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-primary { display: inline-block; padding: 14px 40px; background: var(--gold); color: var(--dark); font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; text-decoration: none; transition: background .3s, transform .2s; }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-outline { display: inline-block; padding: 14px 40px; border: 1px solid rgba(201,168,76,.5); color: var(--gold); font-size: 11px; font-weight: 400; letter-spacing: .22em; text-transform: uppercase; text-decoration: none; transition: border-color .3s, background .3s; }
+    .btn-outline:hover { background: rgba(201,168,76,.08); border-color: var(--gold); }
+
+    /* FOOTER */
+    footer { padding: 40px 10vw; background: var(--dark); border-top: 1px solid rgba(201,168,76,.08); display: flex; justify-content: space-between; align-items: center; }
+    footer .logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .12em; color: var(--gold); }
+    footer p { font-size: 11px; color: rgba(237,227,206,.3); letter-spacing: .08em; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 11px; letter-spacing: .15em; color: rgba(237,227,206,.4); text-decoration: none; text-transform: uppercase; transition: color .2s; }
+    .footer-links a:hover { color: var(--gold); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s ease, transform .8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    @media (max-width: 1024px) {
+      .press-body { grid-template-columns: 1fr; }
+      .press-sidebar { order: -1; }
+    }
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .press-hero { padding: 140px 6vw 60px; }
+      .press-body { padding: 60px 6vw 60px; }
+      .stats-strip { grid-template-columns: 1fr 1fr; }
+      .stages-section, .quotes-section, .photos-section, .rider-section { padding: 0 6vw 60px; }
+      .stages-list { grid-template-columns: 1fr 1fr; }
+      .quotes-grid { grid-template-columns: 1fr; }
+      .photo-grid { grid-template-columns: repeat(2,1fr); }
+      .rider-grid { grid-template-columns: 1fr; }
+      .press-contact { padding: 60px 6vw; }
+      .download-bar { padding: 24px 6vw; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+    }
+    @media (max-width: 560px) {
+      .stats-strip, .stages-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav id="nav">
+    <a href="joelegacy.html" class="nav-logo">Joe Legacy</a>
+    <ul class="nav-links">
+      <li><a href="joelegacy.html">Home</a></li>
+      <li><a href="joelegacy-music.html">Music</a></li>
+      <li><a href="joelegacy-store.html" class="nav-store">Store</a></li>
+      <li><a href="joelegacy.html#newsletter">Book</a></li>
+      <li><a href="joelegacy-press.html" class="active">Press</a></li>
+      <li><a href="https://legacy-charity.org" target="_blank">Charity</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile-drawer" id="mobileDrawer">
+    <a href="joelegacy.html" onclick="closeDrawer()">Home</a>
+    <a href="joelegacy-music.html" onclick="closeDrawer()">Music</a>
+    <a href="joelegacy-store.html" onclick="closeDrawer()">Store</a>
+    <a href="joelegacy.html#newsletter" onclick="closeDrawer()">Book</a>
+    <a href="joelegacy-press.html" onclick="closeDrawer()">Press</a>
+    <a href="https://legacy-charity.org" target="_blank" onclick="closeDrawer()">Charity</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="press-hero">
+    <div class="press-hero-bg"></div>
+    <div class="press-hero-lines"></div>
+    <div class="press-hero-content">
+      <div class="press-hero-tag">Electronic Press Kit</div>
+      <h1>Press <em>&amp;</em><br/>Media</h1>
+      <p class="press-hero-sub">Bio · Accolades · Photos · Tech Rider · Contact</p>
+    </div>
+  </section>
+
+  <!--
+  ════════════════════════════════════════════════════
+  DOWNLOAD BAR
+  ⚠ NEEDS YOUR INPUT: replace # with real file URLs
+  ════════════════════════════════════════════════════
+  -->
+  <div class="download-bar needs-input">
+    <div class="flag">⚠ Add your file links below</div>
+    <span class="download-bar-label">Download</span>
+    <a href="#" class="btn-download primary">⬇ Full EPK (PDF)</a>
+    <a href="#" class="btn-download">🖼 Press Photos (ZIP)</a>
+    <a href="#" class="btn-download">🎵 Audio Files (ZIP)</a>
+    <a href="#" class="btn-download">📄 Tech Rider (PDF)</a>
+  </div>
+
+  <div class="press-body">
+
+    <!-- ══ LEFT: BIO + ACCOLADES + STATS ══ -->
+    <div>
+      <div class="section-label reveal">Artist Biography</div>
+
+      <!--
+        ✅ SOURCE: joelegacy.com/about/
+        All facts below are taken directly from the official About page.
+      -->
+      <p class="bio-long reveal">
+        <strong>Joshua C. Okonkwo</strong>, known as <strong>Joe Legacy</strong>, is a Swiss-based Nigerian singer, songwriter, choir leader, and vocal coach. His musical journey began in a children's choir in his hometown in Nigeria, West Africa.
+      </p>
+      <p class="bio-long reveal">
+        In his early twenties, Joe moved to Switzerland — navigating cultural and linguistic challenges to emerge as a versatile artist across multiple genres. He deepened his craft by earning a <strong>Certificate of Advanced Studies (CAS) in Pedagogy in Pop Music and Performance &amp; Production</strong> from the <strong>Bern University of Arts</strong> in 2018.
+      </p>
+      <p class="bio-long reveal">
+        Over the years he has performed on notable stages inside and outside Switzerland, earning a <strong>nomination for the Critérium Africain Music Awards Belgium 2020</strong> in the Afro-pop category. He captivates audiences with high-energy Afrobeat fusion, Reggae, Soul, and Gospel — music with an infectious energy that keeps people singing, dancing, and wanting more.
+      </p>
+      <p class="bio-long reveal">
+        Beyond the stage, Joe works as a truck driver — pulling 40 tons across the highways, mountains, and valleys of Switzerland. Songs like <em>Singing Truck Driver</em>, <em>Can't Stop Me</em>, and <em>Jeje Laye</em> were composed in his truck cabin during breaks, making his story as compelling as his music.
+      </p>
+
+      <!-- Short bio — written by me, based on joelegacy.com/about/ facts -->
+      <div class="bio-short-box reveal">
+        <div class="label">Short Bio — for programme notes &amp; event listings</div>
+        <p>Joe Legacy (Joshua C. Okonkwo) is a Nigerian-Swiss singer, songwriter, choir leader and vocal coach. Blending Afrobeats, Gospel and Soul, he performs across Europe and coaches singers at all levels. CAS graduate of Bern University of Arts (2018). Nominated: Critérium Africain Music Awards Belgium 2020. Based in Switzerland.</p>
+      </div>
+
+      <!--
+        ✅ SOURCE: joelegacy.com/about/ (2018 CAS, 2020 nomination)
+        ⚠ NEEDS YOUR INPUT: add more milestones below
+      -->
+      <div style="margin-top: 48px;">
+        <div class="section-label reveal">Accolades &amp; Milestones</div>
+        <div class="accolade-strip">
+          <div class="accolade-item reveal reveal-delay-1">
+            <div class="accolade-year">2018</div>
+            <div class="accolade-text">
+              <strong>CAS — Pedagogy in Pop Music &amp; Performance / Production</strong><br/>
+              Bern University of Arts (HKB), Switzerland
+            </div>
+          </div>
+          <div class="accolade-item reveal reveal-delay-2">
+            <div class="accolade-year">2020</div>
+            <div class="accolade-text">
+              <strong>Nomination — Critérium Africain Music Awards Belgium</strong><br/>
+              Category: Afro-pop
+            </div>
+          </div>
+          <!-- ⚠ NEEDS YOUR INPUT: add real milestones here, e.g.: -->
+          <div class="accolade-item needs-input reveal reveal-delay-3" style="padding: 20px 24px;">
+            <div class="flag">⚠ Add more milestones</div>
+            <div style="font-size:13px;color:rgba(237,227,206,.25);font-style:italic;">
+              e.g. album release year, TV/radio features, festival headline dates, notable collaborations…
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        ⚠ NEEDS YOUR INPUT: all three numbers are placeholders.
+        Replace ? with your actual figures.
+      -->
+      <div style="margin-top: 8px;">
+        <div class="stats-strip">
+          <div class="stat-card needs-input reveal reveal-delay-1">
+            <div class="flag">⚠ Confirm</div>
+            <div class="stat-num">?</div>
+            <div class="stat-label">Tracks Released</div>
+            <div class="stat-note">Replace with real count</div>
+          </div>
+          <div class="stat-card needs-input reveal reveal-delay-2">
+            <div class="flag">⚠ Confirm</div>
+            <div class="stat-num">?</div>
+            <div class="stat-label">Stage Performances</div>
+            <div class="stat-note">Replace with real count</div>
+          </div>
+          <div class="stat-card needs-input reveal reveal-delay-3">
+            <div class="flag">⚠ Confirm</div>
+            <div class="stat-num">?</div>
+            <div class="stat-label">Countries Performed</div>
+            <div class="stat-note">Replace with real count</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RIGHT: FACT SHEET SIDEBAR ══ -->
+    <div class="press-sidebar reveal">
+
+      <!--
+        ✅ SOURCE: joelegacy.com/about/ and homepage
+        ⚠ Items marked are assumptions — confirm or correct
+      -->
+      <div class="sidebar-block">
+        <div class="sidebar-block-head">Artist Facts</div>
+        <div class="fact-row"><span class="fact-key">Full Name</span><span class="fact-val">Joshua C. Okonkwo</span></div>
+        <div class="fact-row"><span class="fact-key">Stage Name</span><span class="fact-val">Joe Legacy</span></div>
+        <div class="fact-row"><span class="fact-key">Origin</span><span class="fact-val">Nigeria, West Africa</span></div>
+        <div class="fact-row"><span class="fact-key">Based</span><span class="fact-val">Switzerland</span></div>
+        <div class="fact-row"><span class="fact-key">Genres</span><span class="fact-val">Afrobeats · Reggae · Soul · Gospel</span></div>
+        <div class="fact-row"><span class="fact-key">Roles</span><span class="fact-val">Performer · Choir Leader · Vocal Coach</span></div>
+        <div class="fact-row"><span class="fact-key">Education</span><span class="fact-val">CAS, Bern University of Arts, 2018</span></div>
+        <div class="fact-row"><span class="fact-key">Latest Single</span><span class="fact-val">Dance (2026)</span></div>
+        <!-- ⚠ NEEDS YOUR INPUT -->
+        <div class="fact-row needs-input">
+          <span class="fact-key">Label</span>
+          <span class="fact-val placeholder-text">Independent?</span>
+        </div>
+        <div class="fact-row needs-input">
+          <span class="fact-key">Management</span>
+          <span class="fact-val placeholder-text">Confirm contact</span>
+        </div>
+        <div class="fact-row"><span class="fact-key">Press / Booking</span><span class="fact-val"><a href="mailto:hello@joelegacy.com">hello@joelegacy.com</a></span></div>
+        <div class="fact-row"><span class="fact-key">Charity</span><span class="fact-val"><a href="https://legacy-charity.org" target="_blank">legacy-charity.org</a></span></div>
+      </div>
+
+      <div class="sidebar-block" style="margin-top:2px;">
+        <div class="sidebar-block-head">Streaming &amp; Links</div>
+        <!-- ✅ SOURCE: homepage + joelegacy.com -->
+        <div class="fact-row"><span class="fact-key">All Platforms</span><span class="fact-val"><a href="https://joelegacy.fanlink.tv/All-content" target="_blank">fanlink.tv</a></span></div>
+        <div class="fact-row"><span class="fact-key">Dance (2026)</span><span class="fact-val"><a href="https://fanlink.tv/JoeLegacy-Dance" target="_blank">Listen Now</a></span></div>
+        <div class="fact-row"><span class="fact-key">Website</span><span class="fact-val"><a href="https://joelegacy.com" target="_blank">joelegacy.com</a></span></div>
+        <div class="fact-row"><span class="fact-key">YouTube</span><span class="fact-val"><a href="https://www.youtube.com/channel/UCtwKdgfKoNiqUuLDu7YvVCQ" target="_blank">Channel</a></span></div>
+        <!-- ⚠ NEEDS YOUR INPUT -->
+        <div class="fact-row needs-input">
+          <span class="fact-key">Instagram</span>
+          <span class="fact-val placeholder-text">Add handle</span>
+        </div>
+        <div class="fact-row needs-input">
+          <span class="fact-key">Facebook</span>
+          <span class="fact-val placeholder-text">Add link</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--
+  ════════════════════════════════════════════════
+  NOTABLE STAGES
+  ✅ SOURCE: joelegacy.com/events/ (first three)
+  ✅ SOURCE: joelegacy.com/events/ YouTube caption (Harting AG)
+  ⚠ NEEDS YOUR INPUT: add more from your history
+  ════════════════════════════════════════════════
+  -->
+  <section class="stages-section">
+    <div class="section-label reveal">Notable Stages &amp; Festivals</div>
+    <div class="stages-list">
+      <div class="stage-item reveal reveal-delay-1">
+        <div class="stage-name">Blues &amp; Jazz Festival</div>
+        <div class="stage-detail">Rapperswil-Jona, Switzerland</div>
+      </div>
+      <div class="stage-item reveal reveal-delay-2">
+        <div class="stage-name">African Cultural Festival</div>
+        <div class="stage-detail">Bern, Switzerland</div>
+      </div>
+      <div class="stage-item reveal reveal-delay-3">
+        <div class="stage-name">Lakelive Festival</div>
+        <div class="stage-detail">Switzerland</div>
+      </div>
+      <div class="stage-item reveal reveal-delay-1">
+        <div class="stage-name">Harting AG — Corporate Choir</div>
+        <div class="stage-detail">Turned a group of tech professionals into a choir for the company's 80th anniversary</div>
+      </div>
+      <!-- ⚠ NEEDS YOUR INPUT -->
+      <div class="stage-item needs-input reveal reveal-delay-2" style="padding: 24px 28px;">
+        <div class="flag">⚠ Add more stages</div>
+        <div class="stage-detail" style="font-style:italic;color:rgba(237,227,206,.2);">
+          Other festivals, churches, venues, corporate events…
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--
+  ════════════════════════════════════════════════
+  PRESS QUOTES
+  ⚠ ALL NEEDS YOUR INPUT
+  Every quote below is a placeholder. Replace with
+  real quotes from journalists, event organisers,
+  pastors, festival directors, or music blogs.
+  If you have no press yet, a quote from a notable
+  person you've worked with is a solid substitute.
+  ════════════════════════════════════════════════
+  -->
+  <section class="quotes-section">
+    <div class="section-label reveal">Press Quotes</div>
+    <div class="quotes-grid">
+      <div class="quote-card needs-input reveal reveal-delay-1">
+        <div class="flag">⚠ Replace with real quote</div>
+        <p class="quote-text placeholder-text">Add a real quote here — from a journalist, event organiser, or music publication that has written about or reviewed your work.</p>
+        <div class="quote-source placeholder-text">Source Name</div>
+        <div class="quote-pub placeholder-text">Year</div>
+      </div>
+      <div class="quote-card needs-input reveal reveal-delay-2">
+        <div class="flag">⚠ Replace with real quote</div>
+        <p class="quote-text placeholder-text">A second testimonial — perhaps from a choir director, festival organiser, or church leader you have worked with.</p>
+        <div class="quote-source placeholder-text">Source Name</div>
+        <div class="quote-pub placeholder-text">Year</div>
+      </div>
+      <div class="quote-card needs-input reveal reveal-delay-3">
+        <div class="flag">⚠ Replace with real quote</div>
+        <p class="quote-text placeholder-text">A third quote — from a vocal coaching student, event attendee, or anyone with a public profile who can speak to your work.</p>
+        <div class="quote-source placeholder-text">Source Name</div>
+        <div class="quote-pub placeholder-text">Year</div>
+      </div>
+    </div>
+  </section>
+
+  <!--
+  ════════════════════════════════════════════════
+  PRESS PHOTOS
+  ⚠ ALL NEEDS YOUR INPUT
+  Replace each .photo-placeholder div with:
+  <img src="YOUR-PHOTO-URL.jpg" alt="Joe Legacy" />
+  And update each download link href.
+  ════════════════════════════════════════════════
+  -->
+  <section class="photos-section">
+    <div class="section-label reveal">Press Photos</div>
+    <p class="reveal" style="font-size:13px;color:rgba(237,227,206,.4);margin-bottom:12px;">
+      Hi-res photos for editorial use. Credit: Joe Legacy / joelegacy.com
+    </p>
+    <p class="reveal needs-input" style="font-size:11px;color:rgba(224,92,42,.5);margin-bottom:20px;padding:10px 14px;border:1px dashed rgba(224,92,42,.3);">
+      ⚠ Replace each placeholder below with &lt;img src="your-photo.jpg"&gt; and update the download href links.
+    </p>
+    <div class="photo-grid">
+      <div class="photo-cell reveal">
+        <div class="photo-placeholder"><div class="ph-icon">📷</div><div class="ph-label">Live Performance Shot</div></div>
+        <div class="photo-download-overlay"><a href="#" class="photo-dl-btn">Download</a></div>
+      </div>
+      <div class="photo-cell reveal reveal-delay-1">
+        <div class="photo-placeholder"><div class="ph-icon">📷</div><div class="ph-label">Press Portrait</div></div>
+        <div class="photo-download-overlay"><a href="#" class="photo-dl-btn">Download</a></div>
+      </div>
+      <div class="photo-cell reveal reveal-delay-2">
+        <div class="photo-placeholder"><div class="ph-icon">📷</div><div class="ph-label">Choir / Group Shot</div></div>
+        <div class="photo-download-overlay"><a href="#" class="photo-dl-btn">Download</a></div>
+      </div>
+      <div class="photo-cell reveal reveal-delay-3">
+        <div class="photo-placeholder"><div class="ph-icon">📷</div><div class="ph-label">Studio / Backstage</div></div>
+        <div class="photo-download-overlay"><a href="#" class="photo-dl-btn">Download</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!--
+  ════════════════════════════════════════════════
+  TECHNICAL RIDER
+  ⚠ ALL NEEDS YOUR INPUT
+  This is a typical starting template only.
+  Every line marked ⚠ must be confirmed or
+  corrected before you share this with venues.
+  ════════════════════════════════════════════════
+  -->
+  <section class="rider-section">
+    <div class="section-label reveal">Technical Rider</div>
+    <p class="reveal" style="font-size:13px;color:rgba(224,92,42,.55);margin-bottom:24px;padding:14px 18px;border:1px dashed rgba(224,92,42,.3);">
+      ⚠ This rider is a template — review and correct every item marked in orange before sharing with venues or promoters.
+    </p>
+    <div class="rider-grid">
+      <div class="rider-card reveal reveal-delay-1">
+        <h4>Live Performance</h4>
+        <ul class="rider-list">
+          <li class="needs-input">Minimum stage area: <strong>[confirm dimensions]</strong></li>
+          <li>PA system: L-Acoustics or d&b audiotechnik equivalent</li>
+          <li>Monitoring: floor wedges or in-ear system</li>
+          <li class="needs-input">Microphone: <strong>[confirm preferred model]</strong></li>
+          <li>DI boxes for keyboard / backing track laptop</li>
+          <li class="needs-input">Soundcheck: <strong>[confirm minimum time needed]</strong></li>
+          <li>Private dressing room before show</li>
+        </ul>
+      </div>
+      <div class="rider-card reveal reveal-delay-2">
+        <h4>Choir Direction</h4>
+        <ul class="rider-list">
+          <li class="needs-input">Director mic: <strong>[confirm preference — wireless handheld?]</strong></li>
+          <li>Choir mics: min. 2× overhead condensers per 8 voices</li>
+          <li class="needs-input">Keyboard: <strong>[acoustic piano or digital? confirm]</strong></li>
+          <li class="needs-input">Rehearsal time required: <strong>[confirm minimum]</strong></li>
+          <li>Chord charts provided by Joe Legacy team</li>
+          <li>Stage lighting: warm front wash preferred</li>
+        </ul>
+      </div>
+      <div class="rider-card reveal reveal-delay-3">
+        <h4>Hospitality</h4>
+        <ul class="rider-list">
+          <li class="needs-input">Meal: <strong>[confirm dietary requirements]</strong></li>
+          <li>Still water (1L+) and fruit juices</li>
+          <li>Honey, lemon, herbal tea for vocal care</li>
+          <li class="needs-input">Guest passes: <strong>[confirm number needed]</strong></li>
+        </ul>
+      </div>
+      <div class="rider-card reveal reveal-delay-4">
+        <h4>Travel &amp; Logistics</h4>
+        <ul class="rider-list">
+          <li class="needs-input">Travel costs: <strong>[confirm your policy]</strong></li>
+          <li class="needs-input">Accommodation: <strong>[confirm when required]</strong></li>
+          <li class="needs-input">Contract / deposit: <strong>[confirm your terms]</strong></li>
+          <li>Full rider PDF available on request</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT CTA — ✅ email from joelegacy.com -->
+  <div class="press-contact reveal">
+    <div class="press-contact-text">
+      <h2>Get in <em>Touch</em></h2>
+      <p>For bookings, interviews, and press enquiries — we respond within 48 hours.</p>
+    </div>
+    <div class="press-contact-actions">
+      <a href="mailto:hello@joelegacy.com" class="btn-primary">✉ hello@joelegacy.com</a>
+      <a href="joelegacy.html#newsletter" class="btn-outline">Booking Form</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="logo">Joe Legacy</div>
+    <p>© 2026 Joe Legacy. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="joelegacy.html">Home</a>
+      <a href="joelegacy-store.html">Store</a>
+      <a href="https://legacy-charity.org" target="_blank">Charity</a>
+    </div>
+  </footer>
+
+  <script>
+    const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function tick(){cursor.style.left=mx+'px';cursor.style.top=my+'px';rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tick);})();
+    const nav=document.getElementById('nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60));
+    const hamburger=document.getElementById('hamburger'),drawer=document.getElementById('mobileDrawer');
+    hamburger.addEventListener('click',()=>{
+      const open=drawer.classList.toggle('open');
+      nav.classList.toggle('nav-mobile-open',open);
+      document.body.style.overflow=open?'hidden':'';
+    });
+    function closeDrawer(){drawer.classList.remove('open');nav.classList.remove('nav-mobile-open');document.body.style.overflow='';}
+    const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  </script>
+</body>
+</html>
