@@ -17,11 +17,8 @@
       --accent: #E05C2A; --text: #EDE3CE;
     }
     html { scroll-behavior: smooth; }
-    body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden;   }
-
-    /* Cursor */
-    
-    /* NAV */
+    body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+/* NAV */
     nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: space-between; align-items: center; padding: 28px 56px; background: linear-gradient(to bottom, rgba(13,11,8,.97) 0%, transparent 100%); transition: background .4s, padding .3s; }
     nav.scrolled { background: rgba(13,11,8,.97); backdrop-filter: blur(12px); padding: 18px 56px; border-bottom: 1px solid rgba(201,168,76,.15); }
     .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: .12em; color: var(--gold); text-decoration: none; }
@@ -35,21 +32,29 @@
     .nav-store::after { display: none !important; }
 
     /* Cart btn */
-    .cart-btn { position: relative; background: none; border: 1px solid rgba(201,168,76,.4); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; padding: 10px 20px; display: flex; align-items: center; gap: 8px; transition: background .3s, border-color .3s; text-decoration: none;   }
+    .cart-btn { position: relative; background: none; border: 1px solid rgba(201,168,76,.4); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; padding: 10px 20px; display: flex; align-items: center; gap: 8px; transition: background .3s, border-color .3s; text-decoration: none; }
     .cart-btn:hover { background: rgba(201,168,76,.08); border-color: var(--gold); }
     .cart-count { background: var(--accent); color: #fff; font-size: 10px; font-weight: 500; min-width: 18px; height: 18px; border-radius: 9px; padding: 0 4px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .3s; }
     .cart-count.visible { opacity: 1; }
 
     /* Hamburger */
-    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none;   padding: 4px; z-index: 501; position: relative; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 4px; z-index: 501; position: relative; }
     .nav-hamburger span { display: block; width: 22px; height: 1px; background: var(--gold); transition: transform .3s, opacity .3s; }
     .nav-mobile-open .nav-hamburger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
     .nav-mobile-open .nav-hamburger span:nth-child(2) { opacity: 0; }
     .nav-mobile-open .nav-hamburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-    .nav-mobile-drawer { display: none; position: fixed; inset: 0; background: rgba(13,11,8,.98); z-index: 490; flex-direction: column; align-items: center; justify-content: center; gap: 32px; }
+    /* ── MOBILE DRAWER — 2 column grid ── */
+    .nav-mobile-drawer { display: none; position: fixed; inset: 0; background: rgba(13,11,8,.98); z-index: 490; flex-direction: column; align-items: center; justify-content: center; padding: 40px 10vw; }
     .nav-mobile-drawer.open { display: flex; }
-    .nav-mobile-drawer a { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: .1em; color: var(--text); text-decoration: none; transition: color .2s; }
-    .nav-mobile-drawer a:hover { color: var(--gold); }
+    .nav-mobile-drawer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, var(--gold), transparent); }
+    .nav-mobile-drawer::after { content: 'Navigation'; position: absolute; top: 28px; left: 10vw; font-size: 9px; letter-spacing: .35em; text-transform: uppercase; color: rgba(201,168,76,.35); }
+    .nav-mobile-drawer .drawer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; width: 100%; max-width: 480px; }
+    .nav-mobile-drawer a { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 7vw, 42px); letter-spacing: .08em; color: rgba(237,227,206,.55); text-decoration: none; padding: 12px 0; border-bottom: 1px solid rgba(201,168,76,.06); transition: color .25s, border-color .25s, padding-left .25s; display: block; position: relative; }
+    .nav-mobile-drawer a:hover, .nav-mobile-drawer a.active { color: var(--gold); border-color: rgba(201,168,76,.2); padding-left: 8px; }
+    .nav-mobile-drawer a::before { content: attr(data-index); display: block; font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: .2em; color: rgba(201,168,76,.3); margin-bottom: 4px; font-weight: 400; }
+    .drawer-social { margin-top: 40px; display: flex; gap: 24px; width: 100%; max-width: 480px; }
+    .drawer-social a { font-size: 10px !important; letter-spacing: .2em !important; text-transform: uppercase; color: rgba(237,227,206,.25) !important; font-family: 'DM Sans', sans-serif !important; border: none !important; padding: 0 !important; }
+    .drawer-social a:hover { color: var(--gold) !important; padding-left: 0 !important; }
 
     /* STORE HERO */
     .store-hero { position: relative; padding: 160px 10vw 80px; overflow: hidden; border-bottom: 1px solid rgba(201,168,76,.1); }
@@ -64,7 +69,7 @@
 
     /* FILTER BAR */
     .filter-bar { padding: 48px 10vw 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .filter-btn { padding: 10px 24px; background: none; border: 1px solid rgba(201,168,76,.2); color: rgba(237,227,206,.5); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;   transition: all .3s; }
+    .filter-btn { padding: 10px 24px; background: none; border: 1px solid rgba(201,168,76,.2); color: rgba(237,227,206,.5); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; transition: all .3s; }
     .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
     .filter-btn.active { background: var(--gold); border-color: var(--gold); color: var(--dark); font-weight: 500; }
 
@@ -97,13 +102,13 @@
 
     /* Variant select */
     .product-variant { margin-bottom: 16px; }
-    .product-variant select { width: 100%; background: rgba(255,255,255,.03); border: 1px solid rgba(201,168,76,.2); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 10px 14px; outline: none;   appearance: none; -webkit-appearance: none; transition: border-color .3s; }
+    .product-variant select { width: 100%; background: rgba(255,255,255,.03); border: 1px solid rgba(201,168,76,.2); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 10px 14px; outline: none; appearance: none; -webkit-appearance: none; transition: border-color .3s; }
     .product-variant select:focus { border-color: var(--gold); }
     .product-variant .select-wrap { position: relative; }
     .product-variant .select-wrap::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 11px; pointer-events: none; }
 
     /* Foxy add-to-cart button — same look as before */
-    .btn-add { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--gold); color: var(--dark); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; border: none;   transition: background .3s, transform .2s; white-space: nowrap; }
+    .btn-add { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--gold); color: var(--dark); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; border: none; transition: background .3s, transform .2s; white-space: nowrap; }
     .btn-add:hover { background: var(--gold-light); transform: translateY(-1px); }
 
     /* Foxy form resets — forms must not affect layout */
@@ -169,18 +174,16 @@
   </style>
 </head>
 <body>
-  
-
-  <!-- NAV -->
+<!-- NAV -->
   <nav id="nav">
     <a href="joelegacy.html" class="nav-logo">Joe Legacy</a>
     <div class="nav-right">
       <ul class="nav-links">
         <li><a href="joelegacy.html">Home</a></li>
-        <li><a href="joelegacy-events.html">Events</a></li>
         <li><a href="joelegacy-music.html">Music</a></li>
         <li><a href="joelegacy-store.html" class="nav-store active">Store</a></li>
         <li><a href="joelegacy.html#newsletter">Book</a></li>
+        <li><a href="joelegacy-events.html">Events</a></li>
         <li><a href="joelegacy-press.html">Press</a></li>
         <li><a href="joelegacy-charity.html">Charity</a></li>
       </ul>
@@ -200,12 +203,20 @@
   </nav>
 
   <div class="nav-mobile-drawer" id="mobileDrawer">
-    <a href="joelegacy.html" onclick="closeDrawer()">Home</a>
-    <a href="joelegacy-music.html" onclick="closeDrawer()">Music</a>
-    <a href="joelegacy-store.html" onclick="closeDrawer()">Store</a>
-    <a href="joelegacy.html#newsletter" onclick="closeDrawer()">Book</a>
-    <a href="joelegacy-press.html" onclick="closeDrawer()">Press</a>
-    <a href="joelegacy-charity.html" onclick="closeDrawer()">Charity</a>
+    <div class="drawer-grid">
+      <a href="joelegacy.html" data-index="01" onclick="closeDrawer()">Home</a>
+      <a href="joelegacy-music.html" data-index="02" onclick="closeDrawer()">Music</a>
+      <a href="joelegacy-store.html" data-index="03" onclick="closeDrawer()">Store</a>
+      <a href="joelegacy.html#newsletter" data-index="04" onclick="closeDrawer()">Book</a>
+      <a href="joelegacy-events.html" data-index="05" onclick="closeDrawer()">Events</a>
+      <a href="joelegacy-press.html" data-index="06" onclick="closeDrawer()">Press</a>
+      <a href="joelegacy-charity.html" data-index="07" onclick="closeDrawer()">Charity</a>
+    </div>
+    <div class="drawer-social">
+      <a href="https://www.instagram.com/iamjoelegacy" target="_blank">Instagram</a>
+      <a href="https://www.facebook.com/joelegacymusic" target="_blank">Facebook</a>
+      <a href="https://open.spotify.com/artist/15Objg7tKCE1zvxcGRCTAa" target="_blank">Spotify</a>
+    </div>
   </div>
 
   <!-- STORE HERO -->
@@ -583,8 +594,9 @@
     <p>© 2026 Joe Legacy. All rights reserved.</p>
     <div class="footer-links">
       <a href="joelegacy.html">Home</a>
-      <a href="joelegacy-events.html">Events</a>
       <a href="joelegacy-music.html">Music</a>
+      <a href="joelegacy-store.html">Store</a>
+      <a href="joelegacy-events.html">Events</a>
       <a href="joelegacy-press.html">Press</a>
       <a href="joelegacy-charity.html">Charity</a>
     </div>
@@ -592,7 +604,7 @@
 
   <script>
     // Cursor
-  
+
     // Nav scroll
     const nav=document.getElementById('nav');
     window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60));
