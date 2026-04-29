@@ -32,7 +32,7 @@
     .nav-store { padding: 8px 18px !important; border: 1px solid rgba(201,168,76,.35); color: var(--gold) !important; }
     .nav-store::after { display: none !important; }
     .nav-store:hover { background: rgba(201,168,76,.08); border-color: var(--gold) !important; }
-    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: none; padding: 4px; z-index: 501; position: relative; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none;   padding: 4px; z-index: 501; position: relative; }
     .nav-hamburger span { display: block; width: 22px; height: 1px; background: var(--gold); transition: transform .3s, opacity .3s; }
     .nav-mobile-open .nav-hamburger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
     .nav-mobile-open .nav-hamburger span:nth-child(2) { opacity: 0; }
@@ -66,7 +66,7 @@
       display: inline-flex; align-items: center; gap: 7px;
       padding: 9px 18px; font-size: 11px; letter-spacing: .12em;
       text-transform: uppercase; text-decoration: none; font-weight: 500;
-      border: 1px solid; transition: transform .2s, opacity .2s; cursor: none;
+      border: 1px solid; transition: transform .2s, opacity .2s;  
     }
     .platform-pill:hover { transform: translateY(-2px); opacity: .85; }
     .platform-pill .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -141,7 +141,7 @@
       background: var(--dark-mid); position: relative;
       overflow: hidden; transition: background .3s;
       display: flex; flex-direction: column;
-      cursor: none;
+     
     }
     .release-card:hover { background: #201C14; }
     .release-art {
@@ -169,7 +169,7 @@
       width: 100%; padding: 9px 14px;
       font-family: 'DM Sans', sans-serif;
       font-size: 10px; font-weight: 500; letter-spacing: .15em; text-transform: uppercase;
-      text-decoration: none; border: 1px solid; transition: opacity .2s; cursor: none;
+      text-decoration: none; border: 1px solid; transition: opacity .2s; 
     }
     .stream-btn:hover { opacity: .8; }
     .stream-btn .sb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
@@ -226,14 +226,14 @@
       padding: 10px 20px; border: 1px solid rgba(201,168,76,.2);
       color: rgba(237,227,206,.6); font-size: 11px; letter-spacing: .15em;
       text-transform: uppercase; text-decoration: none;
-      transition: border-color .3s, color .3s; cursor: none;
+      transition: border-color .3s, color .3s; 
     }
     .social-link:hover { border-color: var(--gold); color: var(--gold); }
 
     /* Buttons */
-    .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--gold); color: var(--dark); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: background .3s, transform .2s; cursor: none; border: none; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--gold); color: var(--dark); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: background .3s, transform .2s;  border: none; }
     .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
-    .btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border: 1px solid rgba(201,168,76,.4); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: all .3s; cursor: none; background: none; }
+    .btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border: 1px solid rgba(201,168,76,.4); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; transition: all .3s; background: none; }
     .btn-outline:hover { background: rgba(201,168,76,.08); border-color: var(--gold); }
 
     /* FOOTER */
